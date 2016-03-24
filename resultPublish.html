@@ -7,21 +7,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>CTFSS Result</title>
         <!-- homer-1.5 Vendor css -->
-        <link rel="stylesheet" href="../homer-1.5/vendor/fontawesome/css/font-awesome.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/metisMenu/dist/metisMenu.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/animate.css/animate.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/bootstrap/dist/css/bootstrap.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/fontawesome/css/font-awesome.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/metisMenu/dist/metisMenu.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/animate.css/animate.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/bootstrap/dist/css/bootstrap.css"/>
         <!-- homer-1.5 App css -->
-        <link rel="stylesheet" href="../homer-1.5/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css"/>
-        <link rel="stylesheet" href="../homer-1.5/fonts/pe-icon-7-stroke/css/helper.css"/>
-        <link rel="stylesheet" href="../homer-1.5/styles/style.css"/>
+        <link rel="stylesheet" href="../homer-1.9/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css"/>
+        <link rel="stylesheet" href="../homer-1.9/fonts/pe-icon-7-stroke/css/helper.css"/>
+        <link rel="stylesheet" href="../homer-1.9/styles/style.css"/>
     </head>
     <body>
         <!-- Simple splash screen-->
         <div class="splash">
             <div class="color-line"></div>
             <div class="splash-title">
-                <img src="../homer-1.5/images/loading-bars.svg" width="64" height="64" /> 
+                <img src="../homer-1.9/images/loading-bars.svg" width="64" height="64" /> 
             </div> 
         </div>
         
@@ -30,24 +30,38 @@
             <div class="normalheader transition animated fadeIn">
                 <div class="hpanel">
                     <div class="panel-body">
-                        <h3 class="font-light m-b-xs" id="panel_header"></h3>
+                        <div class="row">
+                            <h3 class="m-b-xs text-center font-bold" id="panel_header"></h3>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <p class="font-light m-b-xs text-center" id="update_status"></p>
+                        </div>
                     </div>
                 </div>
             </div>
             
+            <!-- speaker result list -->
             <div class="content animate-panel">
                 <div id="active_speaker_list"></div>
             </div>
+            
+            <!-- Footer-->
+            <footer class="footer">
+                <span class="pull-right">
+                    COPYRIGHT @ 2016 IRVINE VALLEY COLLEGE
+                </span>
+            </footer>
         </div>
         
         <!-- homer-1.5 Vendor javascript -->
-        <script src="../homer-1.5/vendor/jquery/dist/jquery.min.js"></script>
-        <script src="../homer-1.5/vendor/jquery-ui/jquery-ui.min.js"></script>
-        <script src="../homer-1.5/vendor/slimScroll/jquery.slimscroll.min.js"></script>
-        <script src="../homer-1.5/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="../homer-1.5/vendor/metisMenu/dist/metisMenu.min.js"></script>
-        <script src="../homer-1.5/vendor/iCheck/icheck.min.js"></script>
-        <script src="../homer-1.5/vendor/sparkline/index.js"></script>
+        <script src="../homer-1.9/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="../homer-1.9/vendor/jquery-ui/jquery-ui.min.js"></script>
+        <script src="../homer-1.9/vendor/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="../homer-1.9/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="../homer-1.9/vendor/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="../homer-1.9/vendor/iCheck/icheck.min.js"></script>
+        <script src="../homer-1.9/vendor/sparkline/index.js"></script>
         <!-- application javascript -->
         <script src="js/resultPublish.js"></script>
         <script src="js/session_data.js"></script>

@@ -3,7 +3,7 @@
     
     $FiscalYrsID = filter_input(INPUT_POST, 'FiscalYrsID');
 
-    $query = "SELECT spkr.SpeakerName, skmd.Median, skmn.Mean "
+    $query = "SELECT spkr.*, skmd.Median, skmn.Mean "
             . "FROM [IVCCTFSS].[dbo].[Speaker] AS spkr LEFT JOIN [IVCCTFSS].[dbo].[SpeakerMedian] AS skmd ON spkr.SpeakerID = skmd.SpeakerID "
             . "LEFT JOIN [IVCCTFSS].[dbo].[SpeakerMean] AS skmn ON spkr.SpeakerID = skmn.SpeakerID "
             . "WHERE spkr.FiscalYrsID = '" . $FiscalYrsID . "' "

@@ -89,6 +89,24 @@ function getToday() {
     return mon + "/" + day + "/" + yr;
 }
 
+function getCurrentDateTime() {
+    var today = new Date();
+    var day = today.getDate();
+    var mon = today.getMonth()+1;
+    var yrs = today.getFullYear();
+    var hrs = today.getHours();
+    var min = today.getMinutes();
+    
+    var shift = "AM";
+    if (hrs > 12) {
+        hrs -= 12;
+        shift = "PM";
+    }
+    
+    return mon + "/" + day + "/" + yrs + " - " + hrs + ":" + min + " " + shift;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 function convertDBDateTimeToString(date_time) {
     if (date_time === null || date_time === "") {
         return "";

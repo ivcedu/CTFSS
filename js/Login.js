@@ -3,6 +3,7 @@ var email = "";
 
 ////////////////////////////////////////////////////////////////////////////////
 window.onload = function() {  
+    $('#logn_error').hide();
     var curBrowser = bowser.name;
     var curVersion = Number(bowser.version);
     
@@ -26,8 +27,6 @@ window.onload = function() {
         default:     
             break;
     }
-    
-    $('#logn_error').hide();
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +53,7 @@ $(document).ready(function() {
         else {
             $('#error_msg').html("Invalid username or password");
             $('#logn_error').show();
+            return false;
         }
     });
 });
@@ -61,7 +61,7 @@ $(document).ready(function() {
 ////////////////////////////////////////////////////////////////////////////////
 function loginInfo() {   
     var result = new Array();
-    var username = $('#username').val().toLowerCase();
+    var username = $('#username').val().toLowerCase().replace("@ivc.edu", "");
     var password = $('#password').val();
     
     result = getLoginUserInfo("php/login.php", username, password);

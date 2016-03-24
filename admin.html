@@ -7,28 +7,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>CTFSS Administrator</title>
         <!-- homer-1.5 Vendor css -->
-        <link rel="stylesheet" href="../homer-1.5/vendor/fontawesome/css/font-awesome.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/metisMenu/dist/metisMenu.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/animate.css/animate.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/bootstrap/dist/css/bootstrap.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/sweetalert/lib/sweet-alert.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/fontawesome/css/font-awesome.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/metisMenu/dist/metisMenu.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/animate.css/animate.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/bootstrap/dist/css/bootstrap.css"/>
         <!-- homer-1.5 App css -->
-        <link rel="stylesheet" href="../homer-1.5/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css"/>
-        <link rel="stylesheet" href="../homer-1.5/fonts/pe-icon-7-stroke/css/helper.css"/>
-        <link rel="stylesheet" href="../homer-1.5/styles/style.css"/>
-        <link rel="stylesheet" href="../homer-1.5/styles/static_custom.css">
+        <link rel="stylesheet" href="../homer-1.9/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css"/>
+        <link rel="stylesheet" href="../homer-1.9/fonts/pe-icon-7-stroke/css/helper.css"/>
+        <link rel="stylesheet" href="../homer-1.9/styles/style.css"/>
         <!-- include css -->
         <link rel="stylesheet" href="../include/bootstrap-select/css/bootstrap-select.1.5.4.min.css"/>
         <link rel="stylesheet" href="../include/jquery-ui-themes-1.11.4/themes/flick/jquery-ui.min.css"/>
+        <link rel="stylesheet" href="../include/sweetalert/css/sweetalert.css"/>
         <!-- application css -->
         <link rel="stylesheet" href="css/ctfss_modal.css"/>
     </head>
-    <body>
+    <body class="fixed-navbar fixed-sidebar">
         <!-- Simple splash screen-->
         <div class="splash">
             <div class="color-line"></div>
             <div class="splash-title">
-                <img src="../homer-1.5/images/loading-bars.svg" width="64" height="64" /> 
+                <img src="../homer-1.9/images/loading-bars.svg" width="64" height="64" /> 
             </div> 
         </div>
         
@@ -40,37 +39,54 @@
             </div>
             <nav role="navigation">
                 <div class="header-link hide-menu"><i class="fa fa-bars"></i></div>
+                <div class="mobile-menu">
+                    <button type="button" class="navbar-toggle mobile-menu-toggle" data-toggle="collapse" data-target="#mobile-collapse">
+                        <i class="fa fa-chevron-down"></i>
+                    </button>
+                    <div class="collapse mobile-navbar" id="mobile-collapse">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href=# id="mobile_nav_logout">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="navbar-right">
+                    <ul class="nav navbar-nav no-borders">
+                        <li  class="dropdown">
+                            <a href="#" id="nav_logout">
+                                <i class="pe-7s-upload pe-rotate-90"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </nav>
         </div>
         
         <!-- Navigation -->
         <aside id="menu">
-            <ul class="nav" id="side-menu">
-                <li id="menu_rating">
-                    <a href="rating.html"><span class="nav-label">Rating</span></a>
-                </li>
-                <li id="menu_reports">
-                    <a href=#><span class="nav-label">Reports</span><span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li id="menu_voting"><a href="rptVotingResult.html"><span class="nav-label">Rating</span></a></li>
-                        <li id="menu_result"><a href="result.html"><span class="nav-label">Result</span></a></li>
-                    </ul>
-                </li>
-                <li class="active" id="menu_admin">
-                    <a href="admin.html"><span class="nav-label">Administrator</span><span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li><a href=# data-toggle="modal" data-target="#mod_set_year" id="btn_set_yrs">Set Year</a></li>
-                        <li><a href=# data-toggle="modal" data-target="#mod_voting_date" id="btn_voting_date">Rating Period</a></li>
-                        <li><a href=# data-toggle="modal" data-target="#mod_new_speaker" id="btn_new_speaker">New Speaker</a></li>
-                    </ul>
-                </li>
-                <li id="menu_users">
-                    <a href="rateUser.html"><span class="nav-label">Rating Users</span><span class="fa arrow"></span></a>
-                </li>
-                <li>
-                    <a href=# id="nav_logout"><span class="nav-label">Logout</span><span class="pull-right"><i class="fa fa-sign-out"></i></span></a>
-                </li>
-            </ul>
+            <div id="navigation">
+                <ul class="nav" id="side-menu">
+                    <li id="menu_rating">
+                        <a href="rating.html"><span class="nav-label">Rating</span></a>
+                    </li>
+                    <li id="menu_reports">
+                        <a href=#><span class="nav-label">Reports</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li id="menu_voting"><a href="rptVotingResult.html"><span class="nav-label">Rating</span></a></li>
+                            <li id="menu_result"><a href="result.html"><span class="nav-label">Result</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="active" id="menu_admin">
+                        <a href=#><span class="nav-label">Administrator</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li class="active"><a href="admin.html"><span class="nav-label">Main Page</span></a></li>
+                            <li><a href="adminSetting.html"><span class="nav-label">Admin Setting</span></a></li>
+                            <li><a href="rateUser.html"><span class="nav-label">Rating User</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </aside>
         
         <!-- Main Wrapper -->
@@ -78,15 +94,42 @@
             <div class="normalheader transition animated fadeIn">
                 <div class="hpanel">
                     <div class="panel-body">
-                        <h3 class="font-light m-b-xs" id="panel_header"></h3>     
-                        <h3 class="font-light m-b-xs" id="panel_voting_date"></h3>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <h3 class="font-light m-b-xs text-center" id="panel_header"></h3>     
+                                <h3 class="font-light m-b-xs text-center" id="panel_voting_date"></h3>
+                            </div>
+                            <br>
+                            <div class="row form-horizontal">
+                                <div class="col-xs-6 col-sm-6 col-md-3 col-lg-2">
+                                    <button type="button" class="btn btn-primary col-xs-12 col-sm-12 col-md-12 col-lg-12" data-toggle="modal" data-target="#mod_set_year" id="btn_set_yrs">Set Year</button>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-3 col-lg-2">
+                                    <button type="button" class="btn btn-primary col-xs-12 col-sm-12 col-md-12 col-lg-12" data-toggle="modal" data-target="#mod_voting_date" id="btn_voting_date">Rating Period</button>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-3 col-lg-2">
+                                    <button type="button" class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12" data-toggle="modal" data-target="#mod_new_speaker" id="btn_new_speaker">New Speaker</button>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-3 col-lg-2">
+                                    <button type="button" class="btn btn-info col-xs-12 col-sm-12 col-md-12 col-lg-12" id="btn_publish_link">Publish Link</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
+            <!-- speaker list -->
             <div class="content animate-panel">
                 <div id="active_speaker_list"></div>
             </div>
+            
+            <!-- Footer-->
+            <footer class="footer">
+                <span class="pull-right">
+                    COPYRIGHT @ 2016 IRVINE VALLEY COLLEGE
+                </span>
+            </footer>
         </div>
         
         <!-- set year modal -->
@@ -95,17 +138,12 @@
                 <div class="modal-content">
                     <div class="color-line"></div>
                     <div class="modal-header text-center">
-                        <h3>Commencement Speaker Year</h3>
+                        <h3>New Commencement Speaker Year</h3>
                     </div>
                     <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-4" style="padding-top: 7px;">Current Active Year:</div>
-                            <div class="col-md-4"><div class="form-control" id="mod_current_yrs"></div></div>
-                        </div>
-                        <br/>
                         <div class="row form-horizontal">
                             <div class="col-md-4" style="padding-top: 7px;">New Active Year:</div>
-                            <div class="col-md-4"><select class="selectpicker form-control" id="mod_fiscal_yrs_list"></select></div>
+                            <div class="col-md-4"><div class="form-control" id="mod_new_yrs"></div></div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -153,7 +191,7 @@
                     <div class="modal-body">
                         <div class="container-fluid">
                             <div class="row">
-                                <img alt="logo" class="img-circle m-b" src="images/user_web.jpg" id="mod_speaker_img">
+                                <img alt="logo" class="img-circle m-b" style="width: 200px; height: 200px;" src="images/user_web.jpg" id="mod_speaker_img">
                             </div>
                             <div class="row">
                                 <div class="col-md-3" style="padding-top: 7px;">Speaker Picture:</div>
@@ -180,19 +218,19 @@
         </div>
         
         <!-- homer-1.5 Vendor javascript -->
-        <script src="../homer-1.5/vendor/jquery/dist/jquery.min.js"></script>
-        <script src="../homer-1.5/vendor/jquery-ui/jquery-ui.min.js"></script>
-        <script src="../homer-1.5/vendor/slimScroll/jquery.slimscroll.min.js"></script>
-        <script src="../homer-1.5/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="../homer-1.5/vendor/metisMenu/dist/metisMenu.min.js"></script>
-        <script src="../homer-1.5/vendor/iCheck/icheck.min.js"></script>
-        <script src="../homer-1.5/vendor/sparkline/index.js"></script>
-        <script src="../homer-1.5/vendor/sweetalert/lib/sweet-alert.min.js"></script>
+        <script src="../homer-1.9/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="../homer-1.9/vendor/jquery-ui/jquery-ui.min.js"></script>
+        <script src="../homer-1.9/vendor/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="../homer-1.9/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="../homer-1.9/vendor/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="../homer-1.9/vendor/iCheck/icheck.min.js"></script>
+        <script src="../homer-1.9/vendor/sparkline/index.js"></script>
         <!-- include javascript -->
         <script src="../include/jquery-autosize/jquery.autosize.1.18.1.min.js"></script>
         <script src="../include/jquery-ui-1.11.4/js/jquery-ui.min.js"></script>
         <script src="../include/bootstrap-select/js/bootstrap-select.1.5.4.min.js"></script>
         <script src="../include/bootstrap-filestyle/js/bootstrap-filestyle.1.1.2.min.js"></script>
+        <script src="../include/sweetalert/js/sweetalert.min.js"></script>
         <!-- application javascript -->
         <script src="js/admin.js"></script>
         <script src="js/session_data.js"></script>

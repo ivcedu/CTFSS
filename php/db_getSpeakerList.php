@@ -3,7 +3,9 @@
     
     $FiscalYrsID = filter_input(INPUT_POST, 'FiscalYrsID');
 
-    $query = "SELECT * FROM [IVCCTFSS].[dbo].[Speaker] WHERE FiscalYrsID = '" . $FiscalYrsID . "'";
+    $query = "SELECT * FROM [IVCCTFSS].[dbo].[Speaker] "
+            . "WHERE FiscalYrsID = '".$FiscalYrsID."' "
+            . "ORDER BY SpeakerName ASC";
 
     $cmd = $dbConn->prepare($query);
     $cmd->execute(); 

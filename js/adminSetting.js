@@ -1,18 +1,11 @@
-var m_fiscal_yrs_id = "";
-var m_active_yrs = "";
+var m_admin_id = "";
+var m_table;
 
 ////////////////////////////////////////////////////////////////////////////////
 window.onload = function() {
     if (sessionStorage.key(0) !== null) { 
-        if (sessionStorage.getItem('ss_ctfss_loginType') === "RatingUser") {
-            window.open('rating.html', '_self');
-            return false;
-        }
-        
         getLoginInfo();
-        setPanelHeader();
-        getFiscalYrsList();
-        getSpeakerActiveListResult();
+        getAdminList();
     }
     else {
         window.open('Login.html', '_self');
@@ -156,24 +149,60 @@ $(document).ready(function() {
         return false;
     });
     
-    // refresh button click ////////////////////////////////////////////////////
-    $('#btn_refresh').click(function() {
-        var fiscal_yrs = $('#fiscal_yrs_list').val();
+    // add admin button click //////////////////////////////////////////////////
+    $('#btn_admin_add').click(function() {
+        m_admin_id = "";
+        resetModAdminInfo();
+        $('#mod_btn_admin_delete').hide();
+        $('#mod_admin_header').html("New Administrator Setting");
+    });
     
-        var result = new Array();
-        result = db_getFiscalYrsByYrs(fiscal_yrs);
-        if (result.length === 1) {
-            m_fiscal_yrs_id = result[0]['FiscalYrsID'];
-            m_active_yrs = result[0]['FiscalYrs'];
-            $('#panel_header').html(m_active_yrs + " Commencement Task Force Speaker Selection Result");
-            getSpeakerActiveListResult();
-        }
-    
+    // table rating user click event ///////////////////////////////////////////
+    $('table').on('click', 'a[id^="admin_id_"]', function() {
+        m_admin_id = $(this).attr('id').replace("admin_id_", "");
+        $('#mod_admin_header').html("Edit Administrator Setting");
+        resetModAdminInfo();
+        getSelectedAdminInfo();
+        $('#mod_btn_admin_delete').show();
+        $('#mod_admin').modal('show');
         return false;
     });
     
-    // bootstrap selectpicker
-    $('.selectpicker').selectpicker();
+    // modal save button click /////////////////////////////////////////////////
+    $('#mod_btn_admin_save').click(function() {         
+        if (m_admin_id === "") {
+            addAdminToDB();
+        }
+        else {
+            updateAdminToDB();
+        }
+        
+        $('#mod_admin').modal('hide');
+        getAdminList();
+        return false;
+    });
+    
+    // modal delete button click ///////////////////////////////////////////////
+    $('#mod_btn_admin_delete').click(function() { 
+        $('#mod_admin').modal('hide');
+        
+        swal({  title: "Are you sure?",
+                type: "warning", 
+                showCancelButton: true, 
+                confirmButtonColor: "#DD6B55", 
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true }, 
+                function() {
+                    db_deleteAdmin(m_admin_id);
+                    getAdminList();
+                }
+            );
+
+        return false;
+    });  
+    
+    // jquery datatables initialize ////////////////////////////////////////////
+    m_table = $('#tbl_admin_list').DataTable({ paging: false, bInfo: false });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 });
@@ -255,98 +284,48 @@ $.fn['animatePanel'] = function() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function resetModAdminInfo() {
+    $('#mod_admin_mame').val("");
+    $('#mod_admin_email').val("");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getLoginInfo() {
     $('#login_user').html(sessionStorage.getItem('ss_ctfss_loginName'));
 }
 
-function setPanelHeader() {
+function getSelectedAdminInfo() {    
     var result = new Array();
-    result = db_getFiscalYrsActive();
+    result = db_getAdminByID(m_admin_id);
     
     if (result.length === 1) {
-        m_fiscal_yrs_id = result[0]['FiscalYrsID'];
-        m_active_yrs = result[0]['FiscalYrs'];
-    }
-    
-    $('#panel_header').html(m_active_yrs + " Commencement Task Force Speaker Selection Result");
-}
-
-function getFiscalYrsList() {
-    var result = new Array();
-    result = db_getFiscalYrsList();
-    var active_year = "";
-    
-    var fiscal_html = "";
-    for (var i = 0; i < result.length; i++) {
-        if (result[i]['Active'] === "1") {
-            active_year = result[i]['FiscalYrs'];
-        }
-        fiscal_html += "<option value='" + result[i]['FiscalYrs'] + "'>" + result[i]['FiscalYrs'] + "</option>";
-    }
-    
-    $('#fiscal_yrs_list').empty();
-    $('#fiscal_yrs_list').append(fiscal_html);
-    $('#fiscal_yrs_list').val(active_year);
-    $('#fiscal_yrs_list').selectpicker('refresh');
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function setSpeakerHTML(id, panel_color) {
-    var html = "<div class='row' id='speaker_id_" + id + "'>";
-    html += "<div class='col-xs-12 col-sm-12 col-md-12'>";
-    html += "<div class='hpanel " + panel_color + " contact-panel'>";
-    
-    html += "<div class='panel-body'>";
-    html += "<img alt='logo' class='img-circle m-b' src='' id='speaker_img_" + id + "'>";
-    html += "<h3 class='font-bold' id='speaker_name_" + id + "'></h3>";
-    html += "<div id='speaker_bio_" + id + "'></div>";    
-    html += "</div>";
-    
-    html += "<div class='panel-footer contact-footer'>";
-    html += "<div class='row'>";
-    html += "<div class='col-xs-6 col-sm-3 col-md-2 border-right'><div class='contact-stat'><span>Rating Median:</span><strong id='speaker_median_" + id + "'></strong></div></div>";
-    html += "<div class='col-xs-6 col-sm-3 col-md-2'><div class='contact-stat'><span>Rating Mean:</span><strong id='speaker_mean_" + id + "'></strong></div></div>";
-    html += "</div>";
-    html += "</div>";
-    
-    html += "</div>";
-    html += "</div>";
-    html += "</div>";
-    
-    
-    $('#active_speaker_list').append(html);
-}
-
-function setSpeakerInfoHTML(id, speaker_name, speaker_bio, speaker_pic, speaker_median, speaker_mean) {    
-    if (speaker_pic === "") {
-        $('#speaker_img_' + id).attr('src', 'images/user_web.jpg');
-    }
-    else {
-        $('#speaker_img_' + id).attr('src', speaker_pic);
-    }
-    
-    $('#speaker_name_' + id).html(speaker_name);
-    $('#speaker_bio_' + id).html(speaker_bio.replace(/\n/g, "<br/>"));
-    
-    if (speaker_median !== null) {
-        $('#speaker_median_' + id).html(speaker_median);
-    }
-    if (speaker_mean !== null) {
-        $('#speaker_mean_' + id).html(speaker_mean);
+        $('#mod_admin_mame').val(result[0]['AdminName']);
+        $('#mod_admin_email').val(result[0]['AdminEmail']);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function getSpeakerActiveListResult() {
+function getAdminList() {
     var result = new Array();
-    result = db_getSpeakerListResult2(m_fiscal_yrs_id);
+    result = db_getAdminList();
     
-    $('#active_speaker_list').empty();
-    for (var i = 0; i < result.length; i++) {
-        var panel_color = getRandomPanelColor();
-        setSpeakerHTML(result[i]['SpeakerID'], panel_color);
-        setSpeakerInfoHTML(result[i]['SpeakerID'], result[i]['SpeakerName'], result[i]['SpeakerBio'], result[i]['SpeakerPic'], result[i]['Median'], result[i]['Mean']);
-    }
+    m_table.clear();
+    m_table.rows.add(result).draw();
     
     $('.animate-panel').animatePanel();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function addAdminToDB() {
+    var admin_name = textReplaceApostrophe($.trim($('#mod_admin_mame').val()));
+    var admin_email = textReplaceApostrophe($.trim($('#mod_admin_email').val()));
+    
+    db_insertAdmin(admin_name, admin_email);
+}
+
+function updateAdminToDB() {
+    var admin_name = textReplaceApostrophe($.trim($('#mod_admin_mame').val()));
+    var admin_email = textReplaceApostrophe($.trim($('#mod_admin_email').val()));
+    
+    db_updateAdmin(m_admin_id, admin_name, admin_email);
 }

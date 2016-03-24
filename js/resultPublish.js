@@ -12,20 +12,19 @@ $(window).bind("load", function () {
     $('.splash').css('display', 'none');
 });
 
-//$(window).bind("resize click", function () {
-//    // Add special class to minimalize page elements when screen is less than 768px
-//    setBodySmall();
-//
-//    // Waint until metsiMenu, collapse and other effect finish and set wrapper height
-//    setTimeout(function () {
-//        fixWrapperHeight();
-//    }, 300);
-//});
+$(window).bind("resize click", function () {
+    // Add special class to minimalize page elements when screen is less than 768px
+    setBodySmall();
+
+    // Waint until metsiMenu, collapse and other effect finish and set wrapper height
+    setTimeout(function () {
+        fixWrapperHeight();
+    }, 300);
+});
 
 ////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function() {
     // Add special class to minimalize page elements when screen is less than 768px
-//    setBodySmall();
     $('body').addClass('page-small');
     
     // Initialize iCheck plugin
@@ -73,15 +72,6 @@ function fixWrapperHeight() {
     }
 }
 
-//function setBodySmall() {
-//    if ($(this).width() < 769) {
-//        $('body').addClass('page-small');
-//    } else {
-//        $('body').removeClass('page-small');
-//        $('body').removeClass('show-sidebar');
-//    }
-//}
-
 // Animate panel function
 $.fn['animatePanel'] = function() {
     var element = $(this);
@@ -90,21 +80,24 @@ $.fn['animatePanel'] = function() {
     var child = $(this).data('child');
 
     // Set default values for attrs
-    if(!effect) { effect = 'zoomIn';};
-    if(!delay) { delay = 0.06; } else { delay = delay / 10; };
-    if(!child) { child = '.row > div';} else {child = "." + child;};
+    if(!effect) { effect = 'zoomIn';}
+    if(!delay) { delay = 0.06; } else { delay = delay / 10; }
+    if(!child) { child = '.row > div';} else {child = "." + child;}
 
     //Set defaul values for start animation and delay
     var startAnimation = 0;
     var start = Math.abs(delay) + startAnimation;
 
-    // Get all visible element and set opactiy to 0
+    // Get all visible element and set opacity to 0
     var panel = element.find(child);
     panel.addClass('opacity-0');
 
     // Get all elements and add effect class
     panel = element.find(child);
-    panel.addClass('animated-panel').addClass(effect);
+    panel.addClass('stagger').addClass('animated-panel').addClass(effect);
+
+    var panelsCount = panel.length + 10;
+    var animateTime = (panelsCount * delay * 10000) / 10;
 
     // Add delay for each child elements
     panel.each(function (i, elm) {
@@ -114,6 +107,12 @@ $.fn['animatePanel'] = function() {
         // Remove opacity 0 after finish
         $(elm).removeClass('opacity-0');
     });
+
+    // Clear animation after finish
+    setTimeout(function(){
+        $('.stagger').css('animation', '');
+        $('.stagger').removeClass(effect).removeClass('animated-panel').removeClass('stagger');
+    }, animateTime);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +126,8 @@ function setPanelHeader() {
         m_active_yrs = result[0]['FiscalYrs'];
     }
     
-    $('#panel_header').html(m_active_yrs + " Commencement Task Force Speaker Selection Result");
+    $('#panel_header').html(m_active_yrs + " Irvine Valley College Commencement Speaker Selection Result");
+    $('#update_status').html("Last Update: " + getCurrentDateTime());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ function setSpeakerHTML(id, panel_color) {
     
     html += "<div class='panel-body'>";
     html += "<img alt='logo' class='img-circle m-b' src='' id='speaker_img_" + id + "'>";
-    html += "<h3 id='speaker_name_" + id + "'></h3>";
+    html += "<h3 class='font-bold' id='speaker_name_" + id + "'></h3>";
     html += "<div id='speaker_bio_" + id + "'></div>";    
     html += "</div>";
     
@@ -179,7 +179,7 @@ function setSpeakerInfoHTML(id, speaker_name, speaker_bio, speaker_pic, speaker_
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getSpeakerActiveListResult() {
     var result = new Array();
-    result = db_getSpeakerListResult(m_fiscal_yrs_id);
+    result = db_getSpeakerListResult2(m_fiscal_yrs_id);
     
     $('#active_speaker_list').empty();
     for (var i = 0; i < result.length; i++) {

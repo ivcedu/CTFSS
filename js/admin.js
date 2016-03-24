@@ -14,7 +14,6 @@ window.onload = function() {
             return false;
         }
         getLoginInfo();
-//        setAdminMenu();
         setPanelHeader();
         setPanelVotingDate();
         getSpeakerActiveList();
@@ -43,9 +42,9 @@ $(window).bind("resize click", function () {
 $(document).ready(function() {
     // Add special class to minimalize page elements when screen is less than 768px
     setBodySmall();
-    
+
     // Handle minimalize sidebar menu
-    $('.hide-menu').click(function(event){
+    $('.hide-menu').on('click', function(event){
         event.preventDefault();
         if ($(window).width() < 769) {
             $("body").toggleClass("show-sidebar");
@@ -53,21 +52,21 @@ $(document).ready(function() {
             $("body").toggleClass("hide-sidebar");
         }
     });
-    
+
     // Initialize metsiMenu plugin to sidebar menu
     $('#side-menu').metisMenu();
-    
+
     // Initialize iCheck plugin
     $('.i-checks').iCheck({
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green'
     });
-    
+
     // Initialize animate panel function
     $('.animate-panel').animatePanel();
-    
+
     // Function for collapse hpanel
-    $('.showhide').click(function (event) {
+    $('.showhide').on('click', function (event) {
         event.preventDefault();
         var hpanel = $(this).closest('div.hpanel');
         var icon = $(this).find('i:first');
@@ -84,16 +83,34 @@ $(document).ready(function() {
             hpanel.find('[id^=map-]').resize();
         }, 50);
     });
-    
+
     // Function for close hpanel
-    $('.closebox').click(function (event) {
+    $('.closebox').on('click', function (event) {
         event.preventDefault();
         var hpanel = $(this).closest('div.hpanel');
         hpanel.remove();
+        if($('body').hasClass('fullscreen-panel-mode')) { $('body').removeClass('fullscreen-panel-mode');}
     });
-    
+
+    // Fullscreen for fullscreen hpanel
+    $('.fullscreen').on('click', function() {
+        var hpanel = $(this).closest('div.hpanel');
+        var icon = $(this).find('i:first');
+        $('body').toggleClass('fullscreen-panel-mode');
+        icon.toggleClass('fa-expand').toggleClass('fa-compress');
+        hpanel.toggleClass('fullscreen');
+        setTimeout(function() {
+            $(window).trigger('resize');
+        }, 100);
+    });
+
+    // Open close right sidebar
+    $('.right-sidebar-toggle').on('click', function () {
+        $('#right-sidebar').toggleClass('sidebar-open');
+    });
+
     // Function for small header
-    $('.small-header-action').click(function(event){
+    $('.small-header-action').on('click', function(event){
         event.preventDefault();
         var icon = $(this).find('i:first');
         var breadcrumb  = $(this).parent().find('#hbreadcrumb');
@@ -101,10 +118,12 @@ $(document).ready(function() {
         breadcrumb.toggleClass('m-t-lg');
         icon.toggleClass('fa-arrow-up').toggleClass('fa-arrow-down');
     });
-    
+
     // Set minimal height of #wrapper to fit the window
-    fixWrapperHeight();
-    
+    setTimeout(function () {
+        fixWrapperHeight();
+    });
+
     // Sparkline bar chart data and options used under Profile image on left navigation panel
     $("#sparkline1").sparkline([5, 6, 7, 2, 0, 4, 2, 4, 5, 7, 2, 4, 12, 11, 4], {
         type: 'bar',
@@ -113,7 +132,7 @@ $(document).ready(function() {
         barColor: '#62cb31',
         negBarColor: '#53ac2a'
     });
-    
+
     // Initialize tooltips
     $('.tooltip-demo').tooltip({
         selector: "[data-toggle=tooltip]"
@@ -123,7 +142,7 @@ $(document).ready(function() {
     $("[data-toggle=popover]").popover();
 
     // Move modal to body
-    // Fix Bootstrap backdrop issue with animation.css
+    // Fix Bootstrap backdrop issu with animation.css
     $('.modal').appendTo("body");
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,14 +153,34 @@ $(document).ready(function() {
         return false;
     });
     
+    // mobile logout button click //////////////////////////////////////////////
+    $('#mobile_nav_logout').click(function() {
+        sessionStorage.clear();
+        window.open('Login.html', '_self');
+        return false;
+    });
+    
     // set year button click ///////////////////////////////////////////////////
     $('#btn_set_yrs').click(function() {
-        getFiscalYrsList();
+        var today = new Date();
+        var yr = today.getFullYear();
+        var new_fiscal_yrs = yr + 1;
+    
+        if (m_active_yrs === new_fiscal_yrs.toString()) {
+            swal({title: "Warning", text: "Current and new fiscal year are same", type: "warning"});
+            return false;
+        }
+        else {
+            getNewFiscalYrs();
+        }
     });
     
     // modal set year save button click ////////////////////////////////////////
     $('#mod_btn_fiscal_yrs_save').click(function() {
         setFiscalYrs();
+        setPanelHeader();
+        setPanelVotingDate();
+        getSpeakerActiveList();
     });
     
     // voting date button click ////////////////////////////////////////////////
@@ -181,8 +220,16 @@ $(document).ready(function() {
         }
         
         m_speaker_id = "";
+        m_base64_data = "";
         resetModSpeakerInfo();
         $('#mod_speaker_header').html("New Speaker Setting");
+    });
+    
+    // publish link button click ///////////////////////////////////////////////
+    $('#btn_publish_link').click(function() {
+        var site = location.href.replace("admin.html", "resultPublish.html");
+        swal("Publish Link", site, "info");
+        return false;
     });
     
     // modal new speaker picture button click //////////////////////////////////
@@ -192,16 +239,7 @@ $(document).ready(function() {
     });
     
     // modal new speaker save button click /////////////////////////////////////
-    $('#mod_btn_new_speaker_save').click(function() {
-        // speaker exist validation
-        var speaker_name = $.trim(textReplaceApostrophe($('#mod_speaker_mame').val()));
-        var result = new Array();
-        result = db_getSpeakerByName(m_fiscal_yrs_id, speaker_name);
-        if (result.length === 1) {
-            swal({title: "Error", text: "Speaker already exist", type: "error"});
-            return false;
-        }
-        
+    $('#mod_btn_new_speaker_save').click(function() {        
         if (m_speaker_id === "") {
             addSpeakerToDB();
         }
@@ -217,14 +255,28 @@ $(document).ready(function() {
         
         resetModSpeakerInfo();
         getSelectedSpeakerInfo();
+        
+        return false;
     });
     
     // speaker list delete button click ////////////////////////////////////////
     $(document).on('click', 'button[id^="btn_speaker_delete_"]', function() {
         m_speaker_id = $(this).attr('id').replace("btn_speaker_delete_", "");
-        if (db_deleteSpeaker(m_fiscal_yrs_id, m_speaker_id)) {
-            $('#speaker_id_' + m_speaker_id).remove();
-        }
+        swal({  title: "Are you sure?", 
+                text: "You will not be able to recover deleted speaker rating, mean and median value",
+                type: "warning", 
+                showCancelButton: true, 
+                confirmButtonColor: "#DD6B55", 
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true }, 
+                function() {
+                    if (db_deleteSpeaker(m_fiscal_yrs_id, m_speaker_id)) {
+                        $('#speaker_id_' + m_speaker_id).remove();
+                    }
+                }
+            );
+
+        return false;
     });
     
     // bootstrap selectpicker
@@ -283,21 +335,24 @@ $.fn['animatePanel'] = function() {
     var child = $(this).data('child');
 
     // Set default values for attrs
-    if(!effect) { effect = 'zoomIn';};
-    if(!delay) { delay = 0.06; } else { delay = delay / 10; };
-    if(!child) { child = '.row > div';} else {child = "." + child;};
+    if(!effect) { effect = 'zoomIn';}
+    if(!delay) { delay = 0.06; } else { delay = delay / 10; }
+    if(!child) { child = '.row > div';} else {child = "." + child;}
 
     //Set defaul values for start animation and delay
     var startAnimation = 0;
     var start = Math.abs(delay) + startAnimation;
 
-    // Get all visible element and set opactiy to 0
+    // Get all visible element and set opacity to 0
     var panel = element.find(child);
     panel.addClass('opacity-0');
 
     // Get all elements and add effect class
     panel = element.find(child);
-    panel.addClass('animated-panel').addClass(effect);
+    panel.addClass('stagger').addClass('animated-panel').addClass(effect);
+
+    var panelsCount = panel.length + 10;
+    var animateTime = (panelsCount * delay * 10000) / 10;
 
     // Add delay for each child elements
     panel.each(function (i, elm) {
@@ -307,6 +362,12 @@ $.fn['animatePanel'] = function() {
         // Remove opacity 0 after finish
         $(elm).removeClass('opacity-0');
     });
+
+    // Clear animation after finish
+    setTimeout(function(){
+        $('.stagger').css('animation', '');
+        $('.stagger').removeClass(effect).removeClass('animated-panel').removeClass('stagger');
+    }, animateTime);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -324,14 +385,6 @@ function getLoginInfo() {
     $('#login_user').html(sessionStorage.getItem('ss_ctfss_loginName'));
 }
 
-//function setAdminMenu() {
-//    if (sessionStorage.getItem('ss_ctfss_loginType') === "RatingUser") {
-//        $('#menu_reports').hide();
-//        $('#menu_admin').hide();
-//        $('#menu_users').hide();
-//    }
-//}
-
 function setPanelHeader() {
     var result = new Array();
     result = db_getFiscalYrsActive();
@@ -342,7 +395,6 @@ function setPanelHeader() {
     }
     
     $('#panel_header').html(m_active_yrs + " Commencement Task Force Administrator");
-    $('#mod_current_yrs').html(m_active_yrs);
 }
 
 function setPanelVotingDate() {    
@@ -355,6 +407,8 @@ function setPanelVotingDate() {
         $('#panel_voting_date').html("Rating Period: " + m_voting_start + " ~ " + m_voting_end);
     }
     else {
+        m_voting_start = "";
+        m_voting_end = "";
         $('#panel_voting_date').html("Rating Period:");
     }
 }
@@ -368,6 +422,7 @@ function getSelectedSpeakerInfo() {
             $('#mod_speaker_img').attr('src', 'images/user_web.jpg');
         }
         else {
+            m_base64_data = result[0]['SpeakerPic'];
             $('#mod_speaker_img').attr('src', result[0]['SpeakerPic']);
         }
 
@@ -386,7 +441,7 @@ function setSpeakerHTML(id, panel_color) {
     html += "<div class='panel-body'>";
     
     html += "<img alt='logo' class='img-circle m-b' src='' id='speaker_img_" + id + "'>";
-    html += "<h3 id='speaker_name_" + id + "'></h3>";
+    html += "<h3 class='font-bold' id='speaker_name_" + id + "'></h3>";
     html += "<div id='speaker_bio_" + id + "'></div>";
     html += "<br/>";
     html += "<p>";
@@ -432,33 +487,19 @@ function getSpeakerActiveList() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function getFiscalYrsList() {
+function getNewFiscalYrs() {
     var today = new Date();
     var yr = today.getFullYear();
+    var new_fiscal_yrs = yr + 1;
     
-    var fiscal_yrs_1 = yr + 1;
-    var fiscal_yrs_2 = yr + 2;
-    var fiscal_yrs_3 = yr + 3;
-    
-    var fiscal_html = "";
-    if ($('#mod_current_yrs').html() !== fiscal_yrs_1) {
-        fiscal_html += "<option value='" + fiscal_yrs_1 + "'>" + fiscal_yrs_1 + "</option>";
-    }
-    if ($('#mod_current_yrs').html() !== fiscal_yrs_2) {
-        fiscal_html += "<option value='" + fiscal_yrs_2 + "'>" + fiscal_yrs_2 + "</option>";
-    }
-    if ($('#mod_current_yrs').html() !== fiscal_yrs_3) {
-        fiscal_html += "<option value='" + fiscal_yrs_3 + "'>" + fiscal_yrs_3 + "</option>";
-    }
-    
-    $('#mod_fiscal_yrs_list').empty();
-    $('#mod_fiscal_yrs_list').append(fiscal_html);
-    $('#mod_fiscal_yrs_list').selectpicker('refresh');
+    $('#mod_new_yrs').html(new_fiscal_yrs);
 }
 
 function setFiscalYrs() {
-    var fiscal_yrs = $('#mod_fiscal_yrs_list').val();
-    db_insertFiscalYrs(fiscal_yrs);
+    var new_fiscal_yrs = $('#mod_new_yrs').html();
+    
+    m_fiscal_yrs_id = db_insertFiscalYrs(new_fiscal_yrs);
+    db_updateFiscalYrsActive(new_fiscal_yrs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

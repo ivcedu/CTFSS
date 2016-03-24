@@ -1,6 +1,8 @@
 var m_fiscal_yrs_id = "";
 var m_active_yrs = "";
 var m_rating_user_id = "";
+var m_table;
+var m_is_active_yrs = false;
 
 ////////////////////////////////////////////////////////////////////////////////
 window.onload = function() {
@@ -10,8 +12,9 @@ window.onload = function() {
             return false;
         }
         getLoginInfo();
-//        setAdminMenu();
         setPanelHeader();
+        getFiscalYrsList();
+        hideNewRatingUserButton();
         getActiveRatingUserList();
     }
     else {
@@ -38,9 +41,9 @@ $(window).bind("resize click", function () {
 $(document).ready(function() {
     // Add special class to minimalize page elements when screen is less than 768px
     setBodySmall();
-    
+
     // Handle minimalize sidebar menu
-    $('.hide-menu').click(function(event){
+    $('.hide-menu').on('click', function(event){
         event.preventDefault();
         if ($(window).width() < 769) {
             $("body").toggleClass("show-sidebar");
@@ -48,20 +51,21 @@ $(document).ready(function() {
             $("body").toggleClass("hide-sidebar");
         }
     });
-    
+
     // Initialize metsiMenu plugin to sidebar menu
     $('#side-menu').metisMenu();
-    
+
     // Initialize iCheck plugin
     $('.i-checks').iCheck({
+        checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green'
     });
-    
+
     // Initialize animate panel function
     $('.animate-panel').animatePanel();
-    
+
     // Function for collapse hpanel
-    $('.showhide').click(function (event) {
+    $('.showhide').on('click', function (event) {
         event.preventDefault();
         var hpanel = $(this).closest('div.hpanel');
         var icon = $(this).find('i:first');
@@ -78,16 +82,34 @@ $(document).ready(function() {
             hpanel.find('[id^=map-]').resize();
         }, 50);
     });
-    
+
     // Function for close hpanel
-    $('.closebox').click(function (event) {
+    $('.closebox').on('click', function (event) {
         event.preventDefault();
         var hpanel = $(this).closest('div.hpanel');
         hpanel.remove();
+        if($('body').hasClass('fullscreen-panel-mode')) { $('body').removeClass('fullscreen-panel-mode');}
     });
-    
+
+    // Fullscreen for fullscreen hpanel
+    $('.fullscreen').on('click', function() {
+        var hpanel = $(this).closest('div.hpanel');
+        var icon = $(this).find('i:first');
+        $('body').toggleClass('fullscreen-panel-mode');
+        icon.toggleClass('fa-expand').toggleClass('fa-compress');
+        hpanel.toggleClass('fullscreen');
+        setTimeout(function() {
+            $(window).trigger('resize');
+        }, 100);
+    });
+
+    // Open close right sidebar
+    $('.right-sidebar-toggle').on('click', function () {
+        $('#right-sidebar').toggleClass('sidebar-open');
+    });
+
     // Function for small header
-    $('.small-header-action').click(function(event){
+    $('.small-header-action').on('click', function(event){
         event.preventDefault();
         var icon = $(this).find('i:first');
         var breadcrumb  = $(this).parent().find('#hbreadcrumb');
@@ -95,10 +117,12 @@ $(document).ready(function() {
         breadcrumb.toggleClass('m-t-lg');
         icon.toggleClass('fa-arrow-up').toggleClass('fa-arrow-down');
     });
-    
+
     // Set minimal height of #wrapper to fit the window
-    fixWrapperHeight();
-    
+    setTimeout(function () {
+        fixWrapperHeight();
+    });
+
     // Sparkline bar chart data and options used under Profile image on left navigation panel
     $("#sparkline1").sparkline([5, 6, 7, 2, 0, 4, 2, 4, 5, 7, 2, 4, 12, 11, 4], {
         type: 'bar',
@@ -107,7 +131,7 @@ $(document).ready(function() {
         barColor: '#62cb31',
         negBarColor: '#53ac2a'
     });
-    
+
     // Initialize tooltips
     $('.tooltip-demo').tooltip({
         selector: "[data-toggle=tooltip]"
@@ -128,6 +152,37 @@ $(document).ready(function() {
         return false;
     });
     
+    // mobile logout button click //////////////////////////////////////////////
+    $('#mobile_nav_logout').click(function() {
+        sessionStorage.clear();
+        window.open('Login.html', '_self');
+        return false;
+    });
+    
+    // refresh button click ////////////////////////////////////////////////////
+    $('#btn_refresh').click(function() {
+        var fiscal_yrs = $('#fiscal_yrs_list').val();
+    
+        var result = new Array();
+        result = db_getFiscalYrsByYrs(fiscal_yrs);
+        if (result.length === 1) {
+            m_fiscal_yrs_id = result[0]['FiscalYrsID'];
+            m_active_yrs = result[0]['FiscalYrs'];
+            
+            if (result[0]['Active'] === "1") {
+                m_is_active_yrs = true;
+            }
+            else {
+                m_is_active_yrs = false;
+            }
+            $('#panel_header').html(m_active_yrs + " Commencement Task Force Speaker Selection Rating User List");
+        }
+        
+        hideNewRatingUserButton();
+        getActiveRatingUserList();
+        return false;
+    });
+    
     // new rating use button click /////////////////////////////////////////////
     $('#btn_new_user').click(function() {
         if (m_fiscal_yrs_id === "") {
@@ -137,45 +192,61 @@ $(document).ready(function() {
         
         m_rating_user_id = "";
         resetModRatingUserInfo();
+        $('#mod_btn_user_delete').hide();
         $('#mod_rate_user_header').html("New Rating User Setting");
     });
     
-    // modal new rating user save button click /////////////////////////////////
+    // table rating user click event ///////////////////////////////////////////
+    $('table').on('click', 'a[id^="rating_user_id_"]', function() {
+        m_rating_user_id = $(this).attr('id').replace("rating_user_id_", "");
+        $('#mod_rate_user_header').html("Edit Rating User Setting");
+        resetModRatingUserInfo();
+        getSelectedRatingUserInfo();
+        $('#mod_btn_user_delete').show();
+        $('#mod_rate_user').modal('show');
+        return false;
+    });
+    
+    // modal save button click /////////////////////////////////////////////////
     $('#mod_btn_user_save').click(function() { 
-        // rating user exist validation
-        var user_email = $.trim(textReplaceApostrophe($('#mod_user_email').val()));
-        var result = new Array();
-        result = db_getRatingUserByEmail(user_email);
-        if (result.length === 1) {
-            swal({title: "Error", text: "Rating user already exist", type: "warning"});
-            return false;
-        }
-        
         if (m_rating_user_id === "") {
             addRatingUserToDB();
         }
         else {
             updateRatingUserToDB();
         }
-    });
-    
-    // rating user list edit button click //////////////////////////////////////
-    $(document).on('click', 'button[id^="btn_user_edit_"]', function() {
-        m_rating_user_id = $(this).attr('id').replace("btn_user_edit_", "");
-        $('#mod_rate_user_header').html("Edit Rating User Setting");
         
-        resetModRatingUserInfo();
-        getSelectedRatingUserInfo();
+        $('#mod_rate_user').modal('hide');
+        getActiveRatingUserList();
+        return false;
     });
     
-    // rating user list delete button click ////////////////////////////////////
-    $(document).on('click', 'button[id^="btn_user_delete_"]', function() {
-        m_rating_user_id = $(this).attr('id').replace("btn_user_delete_", "");
-        if (db_deleteRatingUser(m_fiscal_yrs_id, m_rating_user_id)) {
-            updateSpeakerMedianMean();
-            $('#rating_user_id_' + m_rating_user_id).remove();
-        }
+    // modal delete button click ///////////////////////////////////////////////
+    $('#mod_btn_user_delete').click(function() { 
+        $('#mod_rate_user').modal('hide');
+        
+        swal({  title: "Are you sure?", 
+                text: "You will not be able to recover deleted user rating value",
+                type: "warning", 
+                showCancelButton: true, 
+                confirmButtonColor: "#DD6B55", 
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true }, 
+                function() {
+                    db_deleteRatingUser(m_fiscal_yrs_id, m_rating_user_id);
+                    updateSpeakerMedianMean();
+                    getActiveRatingUserList();
+                }
+            );
+
+        return false;
     });
+    
+    // bootstrap selectpicker
+    $('.selectpicker').selectpicker();
+    
+    // jquery datatables initialize ////////////////////////////////////////////
+    m_table = $('#active_rating_user_list').DataTable({ paging: false, bInfo: false });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 });
@@ -220,21 +291,24 @@ $.fn['animatePanel'] = function() {
     var child = $(this).data('child');
 
     // Set default values for attrs
-    if(!effect) { effect = 'zoomIn';};
-    if(!delay) { delay = 0.06; } else { delay = delay / 10; };
-    if(!child) { child = '.row > div';} else {child = "." + child;};
+    if(!effect) { effect = 'zoomIn';}
+    if(!delay) { delay = 0.06; } else { delay = delay / 10; }
+    if(!child) { child = '.row > div';} else {child = "." + child;}
 
     //Set defaul values for start animation and delay
     var startAnimation = 0;
     var start = Math.abs(delay) + startAnimation;
 
-    // Get all visible element and set opactiy to 0
+    // Get all visible element and set opacity to 0
     var panel = element.find(child);
     panel.addClass('opacity-0');
 
     // Get all elements and add effect class
     panel = element.find(child);
-    panel.addClass('animated-panel').addClass(effect);
+    panel.addClass('stagger').addClass('animated-panel').addClass(effect);
+
+    var panelsCount = panel.length + 10;
+    var animateTime = (panelsCount * delay * 10000) / 10;
 
     // Add delay for each child elements
     panel.each(function (i, elm) {
@@ -244,6 +318,12 @@ $.fn['animatePanel'] = function() {
         // Remove opacity 0 after finish
         $(elm).removeClass('opacity-0');
     });
+
+    // Clear animation after finish
+    setTimeout(function(){
+        $('.stagger').css('animation', '');
+        $('.stagger').removeClass(effect).removeClass('animated-panel').removeClass('stagger');
+    }, animateTime);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,18 +333,19 @@ function resetModRatingUserInfo() {
     $('#mod_user_email').val("");
 }
 
+function hideNewRatingUserButton() {
+    if (m_is_active_yrs) {
+        $('#new_rating_usr_section').show();
+    }
+    else {
+        $('#new_rating_usr_section').hide();
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getLoginInfo() {
     $('#login_user').html(sessionStorage.getItem('ss_ctfss_loginName'));
 }
-
-//function setAdminMenu() {
-//    if (sessionStorage.getItem('ss_ctfss_loginType') === "RatingUser") {
-//        $('#menu_reports').hide();
-//        $('#menu_admin').hide();
-//        $('#menu_users').hide();
-//    }
-//}
 
 function setPanelHeader() {
     var result = new Array();
@@ -273,9 +354,29 @@ function setPanelHeader() {
     if (result.length === 1) {
         m_fiscal_yrs_id = result[0]['FiscalYrsID'];
         m_active_yrs = result[0]['FiscalYrs'];
+        m_is_active_yrs = true;
     }
     
     $('#panel_header').html(m_active_yrs + " Commencement Task Force Speaker Selection Rating User List");
+}
+
+function getFiscalYrsList() {
+    var result = new Array();
+    result = db_getFiscalYrsList();
+    var active_year = "";
+    
+    var fiscal_html = "";
+    for (var i = 0; i < result.length; i++) {
+        if (result[i]['Active'] === "1") {
+            active_year = result[i]['FiscalYrs'];
+        }
+        fiscal_html += "<option value='" + result[i]['FiscalYrs'] + "'>" + result[i]['FiscalYrs'] + "</option>";
+    }
+    
+    $('#fiscal_yrs_list').empty();
+    $('#fiscal_yrs_list').append(fiscal_html);
+    $('#fiscal_yrs_list').val(active_year);
+    $('#fiscal_yrs_list').selectpicker('refresh');
 }
 
 function getSelectedRatingUserInfo() {    
@@ -289,73 +390,29 @@ function getSelectedRatingUserInfo() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function setRatingUserHTML(id, panel_color) {
-    var html = "<div class='row' id='rating_user_id_" + id + "'>";
-    html += "<div class='col-xs-12 col-sm-12 col-md-12'>";
-    html += "<div class='hpanel " + panel_color + " contact-panel'>";
-    
-    html += "<div class='panel-body'>";    
-    html += "<div class='row'>";
-    html += "<div class='col-xs-4 col-sm-2 col-md-1'>User Name:</div>";
-    html += "<div class='col-xs-8 col-sm-10 col-md-11' id='ru_name_" + id + "'></div>";
-    html += "</div>";
-    html += "<br/>";
-    html += "<div class='row'>";
-    html += "<div class='col-xs-4 col-sm-2 col-md-1'>User Email:</div>";
-    html += "<div class='col-xs-8 col-sm-10 col-md-11' id='ru_email_" + id + "'></div>";
-    html += "</div>";
-    html += "<br/>";
-    html += "<p>";
-    html += "<button type='button' class='btn btn-primary w-xs' data-toggle='modal' data-target='#mod_rate_user' id='btn_user_edit_" + id + "'>Edit</button>";
-    html += "<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>";
-    html += "<button type='button' class='btn btn-danger2 w-xs' id='btn_user_delete_" + id + "'>Delete</button>";
-    html += "</p>";
-    html += "</div>";
-    
-    html += "</div>";
-    html += "</div>";
-    html += "</div>";
-    
-    $('#active_rating_user_list').append(html);
-}
-
-function setRatingUserInfoHTML(id, ru_name, ru_email) {        
-    $('#ru_name_' + id).html(ru_name);
-    $('#ru_email_' + id).html(ru_email);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getActiveRatingUserList() {
     var result = new Array();
-    result = db_getRatingUserList(m_fiscal_yrs_id);
+    result = db_getRatingUserList(m_fiscal_yrs_id, m_is_active_yrs);
     
-    $('#active_rating_user_list').empty();
-    for (var i = 0; i < result.length; i++) {
-        var panel_color = getRandomPanelColor();
-        setRatingUserHTML(result[i]['RatingUserID'], panel_color);
-        setRatingUserInfoHTML(result[i]['RatingUserID'], result[i]['RUName'], result[i]['RUEmail']);
-    }
+    m_table.clear();
+    m_table.rows.add(result).draw();
     
     $('.animate-panel').animatePanel();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function addRatingUserToDB() {
-    var user_name = $.trim(textReplaceApostrophe($('#mod_user_mame').val()));
-    var user_email = $.trim(textReplaceApostrophe($('#mod_user_email').val()));
+    var user_name = textReplaceApostrophe($.trim($('#mod_user_mame').val()));
+    var user_email = textReplaceApostrophe($.trim($('#mod_user_email').val()));
 
-    m_rating_user_id = db_insertRatingUser(m_fiscal_yrs_id, user_name, user_email);
-    setRatingUserHTML(m_rating_user_id);
-    setRatingUserInfoHTML(m_rating_user_id, user_name, user_email);
+    db_insertRatingUser(m_fiscal_yrs_id, user_name, user_email);
 }
 
 function updateRatingUserToDB() {
-    var user_name = $.trim(textReplaceApostrophe($('#mod_user_mame').val()));
-    var user_email = $.trim(textReplaceApostrophe($('#mod_user_email').val()));
+    var user_name = textReplaceApostrophe($.trim($('#mod_user_mame').val()));
+    var user_email = textReplaceApostrophe($.trim($('#mod_user_email').val()));
     
-    if (db_updateRatingUserInfo(m_fiscal_yrs_id, m_rating_user_id, user_name, user_email)) {
-        setRatingUserInfoHTML(m_rating_user_id, user_name, user_email);
-    }
+    db_updateRatingUserInfo(m_fiscal_yrs_id, m_rating_user_id, user_name, user_email);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -372,6 +429,10 @@ function updateSpeakerMedianMean() {
                 ar_rating.push(Number(data[j]['Rating']));
             }
         }
+        else {
+            continue;
+        }
+        
         var median = calculateMedian(ar_rating);
         db_updateSpeakerMedian(m_fiscal_yrs_id, result[i]['SpeakerID'], median);
         var mean = calculateMean(ar_rating);

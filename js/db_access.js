@@ -15,6 +15,33 @@ function getLoginUserInfo(php_file, user, pass) {
 }
 
 // get DB //////////////////////////////////////////////////////////////////////
+function db_getAdminList() {
+    var result = new Array();
+    $.ajax({
+        type:"POST",
+        url:"php/db_getAdminList.php",
+        async: false,  
+        success:function(data) {
+            result = JSON.parse(data);
+        }
+    });
+    return result;
+}
+
+function db_getAdminByID(AdminID) {
+    var result = new Array();
+    $.ajax({
+        type:"POST",
+        url:"php/db_getAdminByID.php",
+        data:{AdminID:AdminID},
+        async: false,  
+        success:function(data) {
+            result = JSON.parse(data);
+        }
+    });
+    return result;
+}
+
 function db_getAdminByEmail(LoginEmail) {
     var result = new Array();
     $.ajax({
@@ -43,11 +70,38 @@ function db_getRatingUserByEmail(LoginEmail) {
     return result;
 }
 
+function db_getFiscalYrsList() {
+    var result = new Array();
+    $.ajax({
+        type:"POST",
+        url:"php/db_getFiscalYrsList.php",
+        async: false,  
+        success:function(data) {
+            result = JSON.parse(data);
+        }
+    });
+    return result;
+}
+
 function db_getFiscalYrsActive() {
     var result = new Array();
     $.ajax({
         type:"POST",
         url:"php/db_getFiscalYrsActive.php",
+        async: false,  
+        success:function(data) {
+            result = JSON.parse(data);
+        }
+    });
+    return result;
+}
+
+function db_getFiscalYrsByYrs(FiscalYrs) {
+    var result = new Array();
+    $.ajax({
+        type:"POST",
+        url:"php/db_getFiscalYrsByYrs.php",
+        data:{FiscalYrs:FiscalYrs},
         async: false,  
         success:function(data) {
             result = JSON.parse(data);
@@ -75,6 +129,20 @@ function db_getSpeakerListResult(FiscalYrsID) {
     $.ajax({
         type:"POST",
         url:"php/db_getSpeakerListResult.php",
+        data:{FiscalYrsID:FiscalYrsID},
+        async: false,  
+        success:function(data) {
+            result = JSON.parse(data);
+        }
+    });
+    return result;
+}
+
+function db_getSpeakerListResult2(FiscalYrsID) {
+    var result = new Array();
+    $.ajax({
+        type:"POST",
+        url:"php/db_getSpeakerListResult2.php",
         data:{FiscalYrsID:FiscalYrsID},
         async: false,  
         success:function(data) {
@@ -112,12 +180,12 @@ function db_getSpeakerByName(FiscalYrsID, SpeakerName) {
     return result;
 }
 
-function db_getRatingUserList(FiscalYrsID) {
+function db_getRatingUserList(FiscalYrsID, ShowEditButton) {
     var result = new Array();
     $.ajax({
         type:"POST",
         url:"php/db_getRatingUserList.php",
-        data:{FiscalYrsID:FiscalYrsID},
+        data:{FiscalYrsID:FiscalYrsID, ShowEditButton:ShowEditButton},
         async: false,  
         success:function(data) {
             result = JSON.parse(data);
@@ -309,6 +377,20 @@ function db_insertVotingDate(FiscalYrsID, StartDate, EndDate) {
     return ResultID;
 }
 
+function db_insertAdmin(AdminName, AdminEmail) {
+    var ResultID = "";
+    $.ajax({
+        type:"POST",
+        url:"php/db_insertAdmin.php",
+        data:{AdminName:AdminName, AdminEmail:AdminEmail},
+        async: false,  
+        success:function(data) {
+            ResultID = JSON.parse(data);
+        }
+    });
+    return ResultID;
+}
+
 // update DB ///////////////////////////////////////////////////////////////////
 function db_updateSpeakerInfo(FiscalYrsID, SpeakerID, SpeakerName, SpeakerBio, SpeakerPic) {
     var Result = false;
@@ -394,6 +476,34 @@ function db_updateVotingDate(FiscalYrsID, StartDate, EndDate) {
     return Result;
 }
 
+function db_updateAdmin(AdminID, AdminName, AdminEmail) {
+    var Result = false;
+    $.ajax({
+        type:"POST",
+        url:"php/db_updateAdmin.php",
+        data:{AdminID:AdminID, AdminName:AdminName, AdminEmail:AdminEmail},
+        async: false,  
+        success:function(data) {
+            Result = JSON.parse(data);
+        }
+    });
+    return Result;
+}
+
+function db_updateFiscalYrsActive(FiscalYrs) {
+    var Result = false;
+    $.ajax({
+        type:"POST",
+        url:"php/db_updateFiscalYrsActive.php",
+        data:{FiscalYrs:FiscalYrs},
+        async: false,  
+        success:function(data) {
+            Result = JSON.parse(data);
+        }
+    });
+    return Result;
+}
+
 // delete DB ///////////////////////////////////////////////////////////////////
 function db_deleteSpeaker(FiscalYrsID, SpeakerID) {
     var Result = false;
@@ -415,6 +525,20 @@ function db_deleteRatingUser(FiscalYrsID, RatingUserID) {
         type:"POST",
         url:"php/db_deleteRatingUser.php",
         data:{FiscalYrsID:FiscalYrsID, RatingUserID:RatingUserID},
+        async: false,  
+        success:function(data) {
+            Result = JSON.parse(data);
+        }
+    });
+    return Result;
+}
+
+function db_deleteAdmin(AdminID) {
+    var Result = false;
+    $.ajax({
+        type:"POST",
+        url:"php/db_deleteAdmin.php",
+        data:{AdminID:AdminID},
         async: false,  
         success:function(data) {
             Result = JSON.parse(data);

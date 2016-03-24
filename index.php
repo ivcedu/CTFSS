@@ -7,14 +7,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Commencement Task Force Speaker Selection</title>
         <!-- homer-1.5 Vendor css -->
-        <link rel="stylesheet" href="../homer-1.5/vendor/fontawesome/css/font-awesome.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/metisMenu/dist/metisMenu.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/animate.css/animate.css"/>
-        <link rel="stylesheet" href="../homer-1.5/vendor/bootstrap/dist/css/bootstrap.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/fontawesome/css/font-awesome.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/metisMenu/dist/metisMenu.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/animate.css/animate.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/bootstrap/dist/css/bootstrap.css"/>
+        <link rel="stylesheet" href="../homer-1.9/vendor/sweetalert/lib/sweet-alert.css"/>
         <!-- homer-1.5 App css -->
-        <link rel="stylesheet" href="../homer-1.5/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css"/>
-        <link rel="stylesheet" href="../homer-1.5/fonts/pe-icon-7-stroke/css/helper.css"/>
-        <link rel="stylesheet" href="../homer-1.5/styles/style.css"/>
+        <link rel="stylesheet" href="../homer-1.9/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css"/>
+        <link rel="stylesheet" href="../homer-1.9/fonts/pe-icon-7-stroke/css/helper.css"/>
+        <link rel="stylesheet" href="../homer-1.9/styles/style.css"/>
         <!-- application css -->
         <link rel="stylesheet" href="css/login.css"/>
     </head>
@@ -22,25 +23,25 @@
         <div class="login-container">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="text-center m-b-md">
-                        <h3 class="font-bold">Commencement Task Force Speaker Selection</h3>
+                    <div class="font-light text-center m-b-md">
+                        <h3 style="color: white;">Commencement Task Force Speaker Selection</h3>
                     </div>
                     <div class="hpanel">
                         <div class="panel-body">
                             <form action="#" id="loginForm">
                                 <div class="form-group">
-                                    <label class="control-label">Username</label>
-                                    <input type="text" class="form-control" id="username">
-                                    <span class="help-block small">Your network username (no email address)</span>
+                                    <label class="control-label" for="username">Username</label>
+                                    <input type="text" class="form-control" required="" value="" name="username" id="username">
+                                    <span class="help-block small">Your network username or email address</span>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label">Password</label>
-                                    <input type="password" class="form-control" id="password">
+                                    <label class="control-label" for="password">Password</label>
+                                    <input type="password" class="form-control" required="" value="" name="password" id="password">
                                     <span class="help-block small">Your network password</span>
                                 </div>
                                 <button class="btn btn-success btn-block" id="btn_login">Login</button>
-                                <div class="text-center" id="logn_error">
-                                    <h4 class="font-bold" id="error_msg"></h4>
+                                <div class="font-light text-center" id="logn_error">
+                                    <h3><small id="error_msg"></small></h3>
                                 </div>    
                             </form>
                         </div>
@@ -50,13 +51,14 @@
         </div>
         
         <!-- homer-1.5 Vendor javascript -->
-        <script src="../homer-1.5/vendor/jquery/dist/jquery.min.js"></script>
-        <script src="../homer-1.5/vendor/jquery-ui/jquery-ui.min.js"></script>
-        <script src="../homer-1.5/vendor/slimScroll/jquery.slimscroll.min.js"></script>
-        <script src="../homer-1.5/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="../homer-1.5/vendor/metisMenu/dist/metisMenu.min.js"></script>
-        <script src="../homer-1.5/vendor/iCheck/icheck.min.js"></script>
-        <script src="../homer-1.5/vendor/sparkline/index.js"></script>
+        <script src="../homer-1.9/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="../homer-1.9/vendor/jquery-ui/jquery-ui.min.js"></script>
+        <script src="../homer-1.9/vendor/slimScroll/jquery.slimscroll.min.js"></script>
+        <script src="../homer-1.9/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="../homer-1.9/vendor/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="../homer-1.9/vendor/iCheck/icheck.min.js"></script>
+        <script src="../homer-1.9/vendor/sparkline/index.js"></script>
+        <script src="../homer-1.9/vendor/sweetalert/lib/sweet-alert.min.js"></script>
         <!-- include javascript -->
         <script src="../include/bowser/bowser.min.js"></script>
         <!-- application javascript -->
