@@ -346,13 +346,17 @@ $.fn['animatePanel'] = function() {
     // Get all visible element and set opacity to 0
     var panel = element.find(child);
     panel.addClass('opacity-0');
-
-    // Get all elements and add effect class
+    
+    // homer-1.5 Get all elements and add effect class
     panel = element.find(child);
-    panel.addClass('stagger').addClass('animated-panel').addClass(effect);
+    panel.addClass('animated-panel').addClass(effect);
 
-    var panelsCount = panel.length + 10;
-    var animateTime = (panelsCount * delay * 10000) / 10;
+    // homer-1.9 Get all elements and add effect class
+//    panel = element.find(child);
+//    panel.addClass('stagger').addClass('animated-panel').addClass(effect);
+//
+//    var panelsCount = panel.length + 10;
+//    var animateTime = (panelsCount * delay * 10000) / 10;
 
     // Add delay for each child elements
     panel.each(function (i, elm) {
@@ -363,11 +367,11 @@ $.fn['animatePanel'] = function() {
         $(elm).removeClass('opacity-0');
     });
 
-    // Clear animation after finish
-    setTimeout(function(){
-        $('.stagger').css('animation', '');
-        $('.stagger').removeClass(effect).removeClass('animated-panel').removeClass('stagger');
-    }, animateTime);
+    // homer-1.9 Clear animation after finish
+//    setTimeout(function(){
+//        $('.stagger').css('animation', '');
+//        $('.stagger').removeClass(effect).removeClass('animated-panel').removeClass('stagger');
+//    }, animateTime);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -439,7 +443,7 @@ function setSpeakerHTML(id, panel_color) {
     html += "<div class='hpanel " + panel_color + " contact-panel'>";
     
     html += "<div class='panel-body'>";
-    
+
     html += "<img alt='logo' class='img-circle m-b' src='' id='speaker_img_" + id + "'>";
     html += "<h3 class='font-bold' id='speaker_name_" + id + "'></h3>";
     html += "<div id='speaker_bio_" + id + "'></div>";
