@@ -17,7 +17,6 @@
         <link rel="stylesheet" href="../homer-1.9/fonts/pe-icon-7-stroke/css/helper.css"/>
         <link rel="stylesheet" href="../homer-1.9/styles/style.css"/>
         <!-- application css -->
-        <link rel="stylesheet" href="css/login.css"/>
     </head>
     <body>
         <div class="login-container">
@@ -61,6 +60,7 @@
         <script src="../homer-1.9/vendor/sweetalert/lib/sweet-alert.min.js"></script>
         <!-- include javascript -->
         <script src="../include/bowser/bowser.min.js"></script>
+        <script src="../include/utilities/js/jquery.backstretch.min.js"></script>
         <!-- application javascript -->
         <script src="js/Login.js"></script>
         <script src="js/session_data.js"></script>
