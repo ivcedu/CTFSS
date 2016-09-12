@@ -57,7 +57,7 @@ $(document).ready(function() {
         }
     });
     
-    $.backstretch(["images/ctfss_back_img_4.jpg"], {duration: 3000, fade: 750});
+    $.backstretch(["images/ctfss_back_web_1.jpg"], {duration: 3000, fade: 750});
 });
 
 ////////////////////////////////////////////////////////////////////////////////
