@@ -122,7 +122,7 @@ function accessCTFSS() {
 
 ////////////////////////////////////////////////////////////////////////////////
 function ireportValidation() {
-    var username = $('#username').val().toLowerCase().replace("@ivc.edu", "");  
+    var username = $('#username').val().toLowerCase().replace("@ivc.edu", "").replace("@saddleback.edu", "");  
     if (ireportDBgetUserAccess(username) !== null) {
         return true;
     }
