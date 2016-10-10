@@ -31,29 +31,42 @@ window.onload = function() {
 
 ////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function() {      
-    $('#btn_login').click(function() { 
-        if(loginInfo()) {
-            $('#error_msg').html("");
-            $('#logn_error').hide();
-
-            var login_access = accessCTFSS();
-            if (login_access === "admin") {
-                window.open('admin.html', '_self');
-                return false;
-            }
-            else if (login_access === "rating_user") {
-                window.open('rating.html', '_self');
-                return false;
+    $('#btn_login').click(function() {         
+        // ireport.ivc.edu validation //////////////////////////////////////////
+        if(location.href.indexOf("ireport.ivc.edu") >= 0 && !ireportValidation()) {
+            swal({  title: "Access Denied",
+                    text: "This is a Development site. It will redirect to IVC Application site",
+                    type: "error",
+                    confirmButtonText: "OK" },
+                    function() {
+                        sessionStorage.clear();
+                        window.open('https://services.ivc.edu/', '_self');
+                    }
+            );
+            return false;
+        }
+        ////////////////////////////////////////////////////////////////////////
+        else {
+            if(loginInfo()) {
+                var login_access = accessCTFSS();
+                if (login_access === "admin") {
+                    window.open('admin.html', '_self');
+                    return false;
+                }
+                else if (login_access === "rating_user") {
+                    window.open('rating.html', '_self');
+                    return false;
+                }
+                else {
+                    swal({title: "Access Denied", text: "You are not a member of commencement task force", type: "error"});
+                    return false;
+                }
             }
             else {
-                swal({title: "Access Denied", text: "You are not a member of commencement task force", type: "error"});
+                $('#error_msg').html("Invalid username or password");
+                $('#logn_error').show();
                 return false;
             }
-        }
-        else {
-            $('#error_msg').html("Invalid username or password");
-            $('#logn_error').show();
-            return false;
         }
     });
     
@@ -104,5 +117,16 @@ function accessCTFSS() {
         else {
             return "";
         }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function ireportValidation() {
+    var username = $('#username').val().toLowerCase().replace("@ivc.edu", "");  
+    if (ireportDBgetUserAccess(username) !== null) {
+        return true;
+    }
+    else {
+        return false;
     }
 }
