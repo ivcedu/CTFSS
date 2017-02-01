@@ -6,6 +6,9 @@
     $SpeakerName = filter_input(INPUT_POST, 'SpeakerName');
     $SpeakerBio = filter_input(INPUT_POST, 'SpeakerBio');
     $SpeakerPic = filter_input(INPUT_POST, 'SpeakerPic');
+    
+    $SpeakerName = str_replace("'", "''", $SpeakerName);
+    $SpeakerBio = str_replace("'", "''", $SpeakerBio);
 
     $query = "UPDATE [IVCCTFSS].[dbo].[Speaker] "
                 ."SET SpeakerName = '".$SpeakerName."', SpeakerBio = '".$SpeakerBio."', SpeakerPic = '".$SpeakerPic."' "

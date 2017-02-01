@@ -5,6 +5,9 @@
     $RatingUserID = filter_input(INPUT_POST, 'RatingUserID');
     $RUName = filter_input(INPUT_POST, 'RUName');
     $RUEmail = filter_input(INPUT_POST, 'RUEmail');
+    
+    $RUName = str_replace("'", "''", $RUName);
+    $RUEmail = str_replace("'", "", $RUEmail);
 
     $query = "UPDATE [IVCCTFSS].[dbo].[RatingUser] "
                 ."SET RUName = '".$RUName."', RUEmail = '".$RUEmail."' "

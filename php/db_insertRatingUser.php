@@ -5,6 +5,9 @@
     $RUName = filter_input(INPUT_POST, 'RUName');
     $RUEmail = filter_input(INPUT_POST, 'RUEmail');
     
+    $RUName = str_replace("'", "''", $RUName);
+    $RUEmail = str_replace("'", "", $RUEmail);
+    
     $query = "INSERT INTO [IVCCTFSS].[dbo].[RatingUser] (FiscalYrsID, RUName, RUEmail) "
                 ."VALUES ('$FiscalYrsID', '$RUName', '$RUEmail')";  
     
